@@ -30,6 +30,9 @@ export default function Header() {
           <Link href="/mindpulse" onClick={() => setMenuOpen(false)}>
             MindPulse
           </Link>
+          <Link href="/marketprice" onClick={() => setMenuOpen(false)}>
+            MarketPrice
+          </Link>
         </nav>
 
         {/* Auth buttons */}
