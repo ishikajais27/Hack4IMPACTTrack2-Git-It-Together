@@ -27,6 +27,9 @@ export default function Header() {
           <Link href="/contact" onClick={() => setMenuOpen(false)}>
             Contact
           </Link>
+          <Link href="/mindpulse" onClick={() => setMenuOpen(false)}>
+            MindPulse
+          </Link>
         </nav>
 
         {/* Auth buttons */}
