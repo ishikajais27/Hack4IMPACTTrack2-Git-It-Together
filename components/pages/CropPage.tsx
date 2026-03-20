@@ -1,10 +1,93 @@
 'use client'
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import Link from 'next/link'
-import ImageUpload from '../ImageUpload'
+
+const ML_BASE = 'https://krishimitra-ml-knuh.onrender.com'
+
+type Top3Item = { class: string; confidence: number }
+
+type CropResult = {
+  status: string
+  predicted_class: string
+  odia_name: string
+  confidence: number
+  severity: 'low' | 'moderate' | 'high' | string
+  advice_odia: string
+  see_vet: boolean
+  low_confidence: boolean
+  top3: Top3Item[]
+}
+
+const SEVERITY_COLOR: Record<string, string> = {
+  low: '#2d6a4f',
+  moderate: '#d97706',
+  high: '#dc2626',
+}
+
+const SEVERITY_BG: Record<string, string> = {
+  low: '#ecfdf5',
+  moderate: '#fffbeb',
+  high: '#fef2f2',
+}
+
+const SEVERITY_BORDER: Record<string, string> = {
+  low: '#6ee7b7',
+  moderate: '#fcd34d',
+  high: '#fca5a5',
+}
 
 export default function CropPage() {
-  const [result, setResult] = useState<string | null>(null)
+  const [result, setResult] = useState<CropResult | null>(null)
+  const [error, setError] = useState<string | null>(null)
+  const [loading, setLoading] = useState(false)
+  const [preview, setPreview] = useState<string | null>(null)
+  const fileRef = useRef<HTMLInputElement>(null)
+
+  async function handleFile(file: File) {
+    setError(null)
+    setResult(null)
+    setPreview(URL.createObjectURL(file))
+    setLoading(true)
+
+    try {
+      const fd = new FormData()
+      fd.append('file', file)
+
+      const res = await fetch(`${ML_BASE}/crop/diagnose`, {
+        method: 'POST',
+        body: fd,
+      })
+
+      if (!res.ok) {
+        const txt = await res.text()
+        throw new Error(`Server error ${res.status}: ${txt}`)
+      }
+
+      const data: CropResult = await res.json()
+
+      if (data.status !== 'success') {
+        throw new Error('Diagnosis failed. Please try a clearer image.')
+      }
+
+      setResult(data)
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'Something went wrong.')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  function handleDrop(e: React.DragEvent) {
+    e.preventDefault()
+    const file = e.dataTransfer.files?.[0]
+    if (file) handleFile(file)
+  }
+
+  const sev = result?.severity ?? 'low'
+  const sevColor = SEVERITY_COLOR[sev] ?? '#2d6a4f'
+  const sevBg = SEVERITY_BG[sev] ?? '#ecfdf5'
+  const sevBorder = SEVERITY_BORDER[sev] ?? '#6ee7b7'
+
   return (
     <>
       <style>{`
@@ -13,11 +96,51 @@ export default function CropPage() {
         .page__back:hover { color: #2d6a4f; }
         .page__title { font-size: 1.9rem; font-weight: 800; color: #1b4332; margin-bottom: 0.4rem; }
         .page__desc { color: #6b7c6b; font-size: 0.95rem; margin-bottom: 2rem; }
+
+        /* Upload card */
         .card { background: #ffffff; border: 1px solid #d8e8d0; border-radius: 18px; padding: 1.75rem; box-shadow: 0 1px 3px rgba(0,0,0,0.08); }
-        .result { margin-top: 1.5rem; background: #f0faf4; border: 1px solid #b7dfc6; border-radius: 12px; padding: 1.25rem 1.5rem; }
-        .result__title { font-size: 0.85rem; font-weight: 700; color: #1b4332; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.5rem; }
-        .result__text { font-size: 0.95rem; color: #1a2e1a; white-space: pre-wrap; line-height: 1.65; }
+        .dropzone { border: 2px dashed #a8d5b5; border-radius: 12px; padding: 2rem 1rem; text-align: center; cursor: pointer; transition: background 0.2s, border-color 0.2s; background: #f7fcf9; }
+        .dropzone:hover { background: #edf7f1; border-color: #4caf82; }
+        .dropzone__icon { font-size: 2.5rem; margin-bottom: 0.5rem; }
+        .dropzone__label { font-size: 0.95rem; color: #3a6b50; font-weight: 600; margin-bottom: 0.25rem; }
+        .dropzone__sub { font-size: 0.8rem; color: #8aab95; }
+        .preview-wrap { margin-top: 1rem; border-radius: 10px; overflow: hidden; max-height: 220px; display: flex; justify-content: center; background: #f0f0f0; }
+        .preview-wrap img { max-height: 220px; object-fit: contain; width: 100%; }
+
+        /* Loading */
+        .loader { margin-top: 1.5rem; display: flex; align-items: center; gap: 0.75rem; color: #3a6b50; font-size: 0.9rem; font-weight: 600; }
+        .spinner { width: 22px; height: 22px; border: 3px solid #d8e8d0; border-top-color: #2d6a4f; border-radius: 50%; animation: spin 0.7s linear infinite; flex-shrink: 0; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* Error */
+        .error-box { margin-top: 1.25rem; background: #fff5f5; border: 1px solid #fca5a5; border-radius: 10px; padding: 1rem 1.25rem; color: #b91c1c; font-size: 0.9rem; }
+
+        /* Result */
+        .result { margin-top: 1.5rem; border-radius: 14px; overflow: hidden; border: 1px solid #b7dfc6; }
+        .result__header { background: #1b4332; padding: 1rem 1.25rem; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.5rem; }
+        .result__name { font-size: 1.1rem; font-weight: 800; color: #fff; }
+        .result__odia { font-size: 0.95rem; color: #a7f3c8; font-weight: 500; }
+        .result__conf { font-size: 0.8rem; background: rgba(255,255,255,0.15); color: #fff; border-radius: 20px; padding: 0.2rem 0.65rem; font-weight: 600; }
+
+        .result__body { background: #f7fcf9; padding: 1.25rem; display: flex; flex-direction: column; gap: 0.9rem; }
+
+        .badge-row { display: flex; gap: 0.6rem; flex-wrap: wrap; }
+        .badge { display: inline-flex; align-items: center; gap: 0.3rem; font-size: 0.8rem; font-weight: 700; border-radius: 20px; padding: 0.25rem 0.75rem; border: 1px solid; }
+
+        .section-label { font-size: 0.75rem; font-weight: 700; color: #1b4332; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 0.3rem; }
+        .advice-box { background: #fff; border: 1px solid #d8e8d0; border-radius: 10px; padding: 0.85rem 1rem; font-size: 1rem; color: #1a2e1a; line-height: 1.6; }
+
+        .top3 { display: flex; flex-direction: column; gap: 0.4rem; }
+        .top3-item { display: flex; align-items: center; gap: 0.6rem; font-size: 0.82rem; color: #3a6b50; }
+        .top3-item__name { flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .top3-bar-wrap { flex: 2; background: #d8e8d0; border-radius: 10px; height: 7px; overflow: hidden; }
+        .top3-bar { height: 100%; background: #2d6a4f; border-radius: 10px; transition: width 0.5s ease; }
+        .top3-item__pct { min-width: 3rem; text-align: right; font-weight: 700; }
+
+        .vet-warning { display: flex; align-items: flex-start; gap: 0.6rem; background: #fff7ed; border: 1px solid #fdba74; border-radius: 10px; padding: 0.75rem 1rem; font-size: 0.88rem; color: #92400e; }
+        .low-conf-note { display: flex; align-items: flex-start; gap: 0.6rem; background: #fffbeb; border: 1px solid #fcd34d; border-radius: 10px; padding: 0.75rem 1rem; font-size: 0.88rem; color: #78350f; }
       `}</style>
+
       <div className="page">
         <Link href="/" className="page__back">
           ← Back to Home
@@ -27,16 +150,149 @@ export default function CropPage() {
           Upload a photo of the diseased leaf or crop. Get the disease name and
           exact treatment steps instantly.
         </p>
+
         <div className="card">
-          <ImageUpload
-            apiEndpoint="/api/crop"
-            label="Upload Crop Photo"
-            onResult={setResult}
-          />
-          {result && (
+          {/* Drop zone */}
+          <div
+            className="dropzone"
+            onClick={() => fileRef.current?.click()}
+            onDrop={handleDrop}
+            onDragOver={(e) => e.preventDefault()}
+          >
+            <div className="dropzone__icon">📷</div>
+            <div className="dropzone__label">
+              Click or drag & drop a crop photo
+            </div>
+            <div className="dropzone__sub">JPG, PNG, WEBP — max 10 MB</div>
+            <input
+              ref={fileRef}
+              type="file"
+              accept="image/*"
+              style={{ display: 'none' }}
+              onChange={(e) => {
+                const f = e.target.files?.[0]
+                if (f) handleFile(f)
+              }}
+            />
+          </div>
+
+          {/* Image preview */}
+          {preview && (
+            <div className="preview-wrap">
+              <img src={preview} alt="Uploaded crop" />
+            </div>
+          )}
+
+          {/* Loading */}
+          {loading && (
+            <div className="loader">
+              <div className="spinner" />
+              Analysing your crop image…
+            </div>
+          )}
+
+          {/* Error */}
+          {error && <div className="error-box">⚠️ {error}</div>}
+
+          {/* Result */}
+          {result && !loading && (
             <div className="result">
-              <div className="result__title">Diagnosis</div>
-              <p className="result__text">{result}</p>
+              <div className="result__header">
+                <div>
+                  <div className="result__name">
+                    {result.predicted_class
+                      .replace(/___/g, ' — ')
+                      .replace(/_/g, ' ')}
+                  </div>
+                  <div className="result__odia">{result.odia_name}</div>
+                </div>
+                <div className="result__conf">
+                  {result.confidence.toFixed(1)}% confident
+                </div>
+              </div>
+
+              <div className="result__body">
+                {/* Badges */}
+                <div className="badge-row">
+                  <span
+                    className="badge"
+                    style={{
+                      color: sevColor,
+                      background: sevBg,
+                      borderColor: sevBorder,
+                    }}
+                  >
+                    🌡 Severity:{' '}
+                    {result.severity.charAt(0).toUpperCase() +
+                      result.severity.slice(1)}
+                  </span>
+                  {result.see_vet && (
+                    <span
+                      className="badge"
+                      style={{
+                        color: '#92400e',
+                        background: '#fff7ed',
+                        borderColor: '#fdba74',
+                      }}
+                    >
+                      👨‍⚕️ Consult Expert
+                    </span>
+                  )}
+                </div>
+
+                {/* Warnings */}
+                {result.low_confidence && (
+                  <div className="low-conf-note">
+                    ⚠️{' '}
+                    <span>
+                      Low confidence — try a clearer, better-lit photo for more
+                      accurate results.
+                    </span>
+                  </div>
+                )}
+                {result.see_vet && (
+                  <div className="vet-warning">
+                    👨‍⚕️{' '}
+                    <span>
+                      This condition may need expert attention. Please consult a
+                      local agriculture officer.
+                    </span>
+                  </div>
+                )}
+
+                {/* Advice */}
+                <div>
+                  <div className="section-label">Treatment Advice (ଓଡ଼ିଆ)</div>
+                  <div className="advice-box">{result.advice_odia}</div>
+                </div>
+
+                {/* Top 3 */}
+                {result.top3?.length > 0 && (
+                  <div>
+                    <div className="section-label">Other Possibilities</div>
+                    <div className="top3">
+                      {result.top3.map((item, i) => (
+                        <div className="top3-item" key={i}>
+                          <span className="top3-item__name">
+                            {item.class
+                              .replace(/___/g, ' — ')
+                              .replace(/_/g, ' ')}
+                          </span>
+                          <div className="top3-bar-wrap">
+                            <div
+                              className="top3-bar"
+                              style={{ width: `${item.confidence}%` }}
+                            />
+                          </div>
+                          <span className="top3-item__pct">
+                            {item.confidence.toFixed(1)}%
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
             </div>
           )}
         </div>
