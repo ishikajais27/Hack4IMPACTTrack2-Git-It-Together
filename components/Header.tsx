@@ -257,14 +257,14 @@ function UserMenu({ user, onLogout }: { user: KmUser; onLogout: () => void }) {
                 router.push('/dashboard')
               }}
             />
-            <DropdownItem
+            {/* <DropdownItem
               icon="⚙️"
               label="Settings"
               onClick={() => {
                 setOpen(false)
                 router.push('/dashboard/settings')
               }}
-            />
+            /> */}
             <div style={{ borderTop: '1px solid #edf4ef' }} />
             <DropdownItem
               icon="🚪"

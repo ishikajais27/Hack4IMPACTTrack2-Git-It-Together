@@ -78,12 +78,12 @@ const FEATURES = [
   },
   {
     number: '04',
-    tag: 'COMING SOON',
+    tag: 'AI POWERED',
     title: 'Mind Pulse',
     desc: "Silent mental wellness check through how you type. No forms, no questions, no stigma. Built with care for the farmer's invisible burdens.",
     accent: '#b5f02a',
     icon: '🧠',
-    href: '#',
+    href: '/mindpulse',
     image: 'brain.png',
     imgHeight: 220,
     // warm plum → nude blush
