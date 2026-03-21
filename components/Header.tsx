@@ -1,9 +1,10 @@
 'use client'
 import Link from 'next/link'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { useRouter, usePathname } from 'next/navigation'
 import { motion } from 'framer-motion'
 
-/* ── Nav items — label + icon matching the Framer component ── */
+/* ── Nav items ── */
 const NAV = [
   { href: '/', label: 'Home', icon: '🏠' },
   { href: '/livestock', label: 'Livestock', icon: '🐄' },
@@ -12,6 +13,15 @@ const NAV = [
   { href: '/mindpulse', label: 'Mind Pulse', icon: '🧠' },
   { href: '/contact', label: 'Contact', icon: '✉️' },
 ]
+
+/* ── Logged-in user shape ── */
+interface KmUser {
+  id: string
+  name: string
+  username: string
+  phone: string
+  district: string
+}
 
 /* ── Single rotating nav item ── */
 function RotatingNavItem({
@@ -123,9 +133,216 @@ function RotatingNavItem({
   )
 }
 
+/* ── User avatar dropdown ── */
+function UserMenu({ user, onLogout }: { user: KmUser; onLogout: () => void }) {
+  const [open, setOpen] = useState(false)
+  const router = useRouter()
+
+  // Get initials from name
+  const initials = user.name
+    .split(' ')
+    .map((w) => w[0])
+    .slice(0, 2)
+    .join('')
+    .toUpperCase()
+
+  return (
+    <div style={{ position: 'relative' }}>
+      <button
+        onClick={() => setOpen((o) => !o)}
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: '0.5rem',
+          background: '#f0f7f4',
+          border: '1.5px solid #2d6a4f',
+          borderRadius: '12px',
+          padding: '0.3rem 0.85rem 0.3rem 0.4rem',
+          cursor: 'pointer',
+          transition: 'all 0.2s',
+        }}
+        onMouseOver={(e) => (e.currentTarget.style.background = '#d8ede5')}
+        onMouseOut={(e) => (e.currentTarget.style.background = '#f0f7f4')}
+      >
+        {/* Avatar circle */}
+        <span
+          style={{
+            width: 30,
+            height: 30,
+            borderRadius: '50%',
+            background: '#2d6a4f',
+            color: '#fff',
+            fontSize: '0.75rem',
+            fontWeight: 700,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            flexShrink: 0,
+          }}
+        >
+          {initials}
+        </span>
+        <span
+          style={{
+            fontSize: '0.875rem',
+            fontWeight: 600,
+            color: '#1b4332',
+            maxWidth: 100,
+            overflow: 'hidden',
+            textOverflow: 'ellipsis',
+            whiteSpace: 'nowrap',
+          }}
+        >
+          {user.name.split(' ')[0]}
+        </span>
+        <span style={{ fontSize: '0.65rem', color: '#2d6a4f', marginLeft: 2 }}>
+          ▼
+        </span>
+      </button>
+
+      {open && (
+        <>
+          {/* Backdrop to close on outside click */}
+          <div
+            style={{ position: 'fixed', inset: 0, zIndex: 199 }}
+            onClick={() => setOpen(false)}
+          />
+          {/* Dropdown */}
+          <div
+            style={{
+              position: 'absolute',
+              top: 'calc(100% + 8px)',
+              right: 0,
+              background: '#fff',
+              border: '1px solid #d8e8d0',
+              borderRadius: 14,
+              boxShadow: '0 8px 32px rgba(0,0,0,0.12)',
+              minWidth: 200,
+              zIndex: 200,
+              overflow: 'hidden',
+            }}
+          >
+            {/* User info header */}
+            <div
+              style={{
+                padding: '14px 16px',
+                borderBottom: '1px solid #edf4ef',
+                background: '#f7fbf8',
+              }}
+            >
+              <p
+                style={{
+                  margin: 0,
+                  fontSize: 13,
+                  fontWeight: 700,
+                  color: '#1b4332',
+                }}
+              >
+                {user.name}
+              </p>
+              <p style={{ margin: '2px 0 0', fontSize: 11, color: '#7aaa8a' }}>
+                📞 {user.phone}
+              </p>
+              <p style={{ margin: '2px 0 0', fontSize: 11, color: '#7aaa8a' }}>
+                📍 {user.district}
+              </p>
+            </div>
+
+            {/* Menu items */}
+            <DropdownItem
+              icon="👤"
+              label="My Account"
+              onClick={() => {
+                setOpen(false)
+                router.push('/dashboard')
+              }}
+            />
+            <DropdownItem
+              icon="⚙️"
+              label="Settings"
+              onClick={() => {
+                setOpen(false)
+                router.push('/dashboard/settings')
+              }}
+            />
+            <div style={{ borderTop: '1px solid #edf4ef' }} />
+            <DropdownItem
+              icon="🚪"
+              label="Logout"
+              danger
+              onClick={() => {
+                setOpen(false)
+                onLogout()
+              }}
+            />
+          </div>
+        </>
+      )}
+    </div>
+  )
+}
+
+function DropdownItem({
+  icon,
+  label,
+  onClick,
+  danger,
+}: {
+  icon: string
+  label: string
+  onClick: () => void
+  danger?: boolean
+}) {
+  const [hov, setHov] = useState(false)
+  return (
+    <button
+      onClick={onClick}
+      onMouseEnter={() => setHov(true)}
+      onMouseLeave={() => setHov(false)}
+      style={{
+        width: '100%',
+        display: 'flex',
+        alignItems: 'center',
+        gap: 10,
+        padding: '10px 16px',
+        background: hov ? (danger ? '#fff5f5' : '#f0f7f4') : 'transparent',
+        border: 'none',
+        cursor: 'pointer',
+        fontSize: 13,
+        fontWeight: 600,
+        color: danger ? '#c0392b' : '#1b4332',
+        textAlign: 'left',
+        transition: 'background 0.15s',
+      }}
+    >
+      <span>{icon}</span>
+      {label}
+    </button>
+  )
+}
+
 /* ── Header ── */
 export default function Header() {
   const [menuOpen, setMenuOpen] = useState(false)
+  const [user, setUser] = useState<KmUser | null>(null)
+  const router = useRouter()
+  const pathname = usePathname()
+
+  // Read user from localStorage on mount + when pathname changes (after login redirect)
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem('km_user')
+      setUser(raw ? JSON.parse(raw) : null)
+    } catch {
+      setUser(null)
+    }
+  }, [pathname])
+
+  const handleLogout = () => {
+    localStorage.removeItem('km_user')
+    setUser(null)
+    router.push('/')
+  }
 
   return (
     <>
@@ -150,14 +367,13 @@ export default function Header() {
 
         .header__nav { display: flex; align-items: center; gap: 0.35rem; }
 
-        /* thin divider between items like the Framer component */
         .nav-sep {
           width: 1px; height: 14px;
           background: rgba(27,67,50,0.18);
           flex-shrink: 0;
         }
 
-        .header__actions { display: flex; gap: 0.75rem; }
+        .header__actions { display: flex; gap: 0.75rem; align-items: center; }
         .header__menu-btn { display: none; background: none; border: none; cursor: pointer; color: #1a2e1a; font-size: 1.5rem; }
 
         .h-btn {
@@ -207,12 +423,20 @@ export default function Header() {
           </nav>
 
           <div className="header__actions">
-            <Link href="/login" className="h-btn h-btn-outline">
-              Login
-            </Link>
-            <Link href="/signup" className="h-btn h-btn-primary">
-              Sign Up
-            </Link>
+            {user ? (
+              /* ── Logged in: show avatar dropdown ── */
+              <UserMenu user={user} onLogout={handleLogout} />
+            ) : (
+              /* ── Logged out: show Login + Sign Up ── */
+              <>
+                <Link href="/login" className="h-btn h-btn-outline">
+                  Login
+                </Link>
+                <Link href="/signup" className="h-btn h-btn-primary">
+                  Sign Up
+                </Link>
+              </>
+            )}
           </div>
 
           <button
