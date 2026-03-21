@@ -59,12 +59,12 @@ const FEATURES = [
   },
   {
     number: '03',
-    tag: 'COMING SOON',
+    tag: 'AI POWERED',
     title: 'Market Price Alerts',
     desc: 'Daily mandi price updates so you know the best time to sell. Never lose money to bad timing again. Get alerts via SMS in Odia.',
     accent: '#b5f02a',
     icon: '📈',
-    href: '#',
+    href: '/marketprice',
     image: 'graph.png',
     imgHeight: 265,
     // dusty slate → warm stone
@@ -635,7 +635,7 @@ function FeatureRow({
                 fontFamily: "'DM Sans',sans-serif",
               }}
             >
-              {feat.tag === 'AI POWERED' ? 'Try Now' : 'Notify Me'}
+              {feat.tag === 'AI POWERED' ? 'Try Now' : 'Notify me '}
               <span
                 style={{
                   display: 'inline-block',
