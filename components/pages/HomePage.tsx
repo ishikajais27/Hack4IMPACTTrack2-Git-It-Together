@@ -560,26 +560,15 @@ export default function HomePage() {
           </div>
 
           {/* ══ RIGHT COL — 3D LEAF TREE ══ */}
-          <div className="right-col" style={{ position: 'relative', zIndex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', padding: '60px 0 80px' }}>
-            <div style={{ position: 'relative', width: 480, height: 620, overflow: 'hidden', marginRight: 300, marginLeft: -60, padding: '20px' }}>
+          <div className="right-col" style={{ position: 'relative', zIndex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'flex-end', padding: '60px 0 80px' }}>
+            <div style={{ position: 'relative', width: 520, height: 620, overflow: 'hidden' }}>
               <div style={{ position: 'absolute', inset: 0, zIndex: 10, pointerEvents: 'all', background: 'transparent' }} />
               <iframe
                 title="Leaf Tree - PS1 Low Poly" frameBorder={0} allowFullScreen
                 allow="autoplay; fullscreen; xr-spatial-tracking"
                 src="https://sketchfab.com/models/d799c08100974e1ba352fcd646cb0694/embed?autospin=1&autostart=1&ui_theme=dark&transparent=1&ui_infos=0&ui_watermark=0&ui_watermark_link=0&ui_controls=0&ui_stop=0&ui_inspector=0&ui_ar=0&ui_help=0&ui_settings=0&ui_vr=0&ui_fullscreen=0&ui_annotations=0&preload=1"
-                style={{ position: 'absolute', top: '-60px', left: '-180px', width: 'calc(100% + 360px)', height: 'calc(100% + 120px)', border: 'none', display: 'block', background: 'transparent', pointerEvents: 'none' }}
+                style={{ position: 'absolute', top: '-60px', left: '-60px', width: 'calc(100% + 120px)', height: 'calc(100% + 120px)', border: 'none', display: 'block', background: 'transparent', pointerEvents: 'none' }}
               />
-            </div>
-
-            {/* writing */}
-            <div style={{ position: 'absolute', right: 0, top: '50%', transform: 'translateY(-50%)', display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 12, maxWidth: 180 }}>
-              <p style={{ fontFamily: "'DM Sans',sans-serif", fontSize: '0.82rem', color: 'rgba(244,244,240,0.85)', lineHeight: 1.75, textAlign: 'right', textShadow: '0 1px 6px rgba(0,0,0,0.7)', fontWeight: 400 }}>
-                Empowering Odisha's farmers with AI-powered tools — from field to market, we're with you every step.
-              </p>
-              <div style={{ width: 40, height: 2, background: '#b5f02a', borderRadius: 2, marginLeft: 'auto' }} />
-              <span style={{ fontSize: '0.65rem', fontWeight: 700, letterSpacing: '0.14em', textTransform: 'uppercase', color: '#b5f02a', textShadow: '0 1px 6px rgba(0,0,0,0.6)' }}>
-                KrishiMitra · Odisha
-              </span>
             </div>
           </div>
         </section>
