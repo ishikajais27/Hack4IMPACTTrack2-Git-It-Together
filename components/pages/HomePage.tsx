@@ -375,7 +375,7 @@ const GALLERY_ITEMS = [
 ]
 
 const MASONRY = [
-  { type: 'stat', icon: '🌾', value: '10,000+', label: 'Farmers Helped', accent: '#b5f02a', size: 'tall' },
+  { type: 'info', icon: '🌱', title: 'Grows With You', desc: 'From first seed to final harvest — KrishiMitra guides you at every stage of your farming journey.', size: 'tall' },
   { type: 'info', icon: '📱', title: 'Works on Any Phone', desc: 'No smartphone needed. KrishiMitra works on basic Android devices, even with low connectivity.', size: 'normal' },
   { type: 'info', icon: '🗣️', title: 'Speaks Odia', desc: 'All responses are in Odia — the language farmers actually understand and trust.', size: 'normal' },
   { type: 'stat', icon: '⚡', value: '< 3 sec', label: 'AI Response Time', accent: '#f4f4f0', size: 'short' },
