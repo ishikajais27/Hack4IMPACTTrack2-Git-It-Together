@@ -45,7 +45,7 @@ const CROPS = [
 ]
 
 // ─────────────────────────────────────────────────────
-// UNITS — what a farmer actually sells
+// UNITS
 // ─────────────────────────────────────────────────────
 const UNITS = [
   { label: '250 gm', kg: 0.25 },
@@ -58,7 +58,7 @@ const UNITS = [
   { label: '50 Kilo', kg: 50 },
   { label: '1 Quintal (100 kg)', kg: 100 },
 ]
-const DEFAULT_UNIT_IDX = 2 // 1 Kilo by default
+const DEFAULT_UNIT_IDX = 2
 
 const DISTRICTS = [
   { name: 'Cuttack', icon: '🏙️', tag: 'Major Mandi' },
@@ -89,10 +89,6 @@ function priceForUnit(perQuintal: number, kg: number): string {
   const val = (perQuintal / 100) * kg
   if (val < 1) return `${(val * 100).toFixed(0)} paise`
   return `₹${val.toLocaleString('en-IN', { maximumFractionDigits: 1 })}`
-}
-
-function rawPriceForUnit(perQuintal: number, kg: number): number {
-  return (perQuintal / 100) * kg
 }
 
 function getAdvice(modal: number, allPrices: number[]) {
@@ -314,7 +310,6 @@ export default function MarketPricePage() {
   const unitObj = UNITS[unitIdx]
   const unitPrice = best ? priceForUnit(parseFloat(best.modal_price), unitObj.kg) : ''
 
-  // ─────────────────────────────────────────────────
   return (
     <div style={S.pageWrap}>
       {/* ─── BACKGROUND ─── */}
@@ -340,15 +335,14 @@ export default function MarketPricePage() {
         <path d="M-10 658 Q162 585 372 622 Q552 654 718 592 Q888 528 1072 598 Q1242 656 1450 604 L1450 920 L-10 920 Z" fill="#f5ede0" opacity="0.65" />
       </svg>
 
-      {/* ══ TOP BAR — CurvedLoop replaces the static title ══ */}
+      {/* ══ TOP BAR ══ */}
       <div style={S.topBar}>
         {step !== 'crop' ? (
           <button style={S.backBtn} onClick={reset}>← Wapas</button>
         ) : (
-          <div style={{ width: 80, flexShrink: 0 }} />
+          <div style={{ width: 70, flexShrink: 0 }} />
         )}
 
-        {/* ── CSS ticker — always visible inside the 50px orange bar ── */}
         <div style={S.topMarqueeWrap}>
           <div style={S.tickerTrack}>
             {[0, 1].map((n) => (
@@ -359,57 +353,49 @@ export default function MarketPricePage() {
           </div>
         </div>
 
-        <div style={{ width: 80, flexShrink: 0 }} />
+        <div style={{ width: 70, flexShrink: 0 }} />
       </div>
 
       {/* ══ STEP 1: CROP ══ */}
       {step === 'crop' && (
         <div style={{ position: 'relative', zIndex: 1 }}>
-          <div style={S.heroSplit}>
-            <div style={S.heroLeft}>
-              <span style={S.heroBadge}>📡 Live · Agmarknet Data</span>
-              <h1 style={S.heroTitle}>
-                Aaj ka<br />
-                <span style={S.heroAccent}>Mandi Bhav</span>
-              </h1>
-              <p style={S.heroDesc}>
-                Apni fasal chuniye — real-time price aur{' '}
-                <strong style={{ color: '#f4a261' }}>"Becho ya Ruko"</strong>{' '}
-                advice paiye. Bilkul free 🙏
-              </p>
-              <div style={S.pillRow}>
-                <span style={S.heroPill}>🏪 19 Districts</span>
-                <span style={S.heroPill}>🌾 13 Crops</span>
-                <span style={S.heroPill}>✅ Daily Update</span>
-              </div>
+          <div style={S.heroSection}>
+            <span style={S.heroBadge}>📡 Live · Agmarknet Data</span>
+            <h1 style={S.heroTitle}>
+              Aaj ka <span style={S.heroAccent}>Mandi Bhav</span>
+            </h1>
+            <p style={S.heroDesc}>
+              Apni fasal chuniye — real-time price aur{' '}
+              <strong style={{ color: '#f4a261' }}>"Becho ya Ruko"</strong>{' '}
+              advice paiye. Bilkul free 🙏
+            </p>
+            <div style={S.pillRow}>
+              <span style={S.heroPill}>🏪 19 Districts</span>
+              <span style={S.heroPill}>🌾 13 Crops</span>
+              <span style={S.heroPill}>✅ Daily Update</span>
             </div>
           </div>
 
-          <div style={{ textAlign: 'center', margin: '20px 0' }}>
-            <h2 style={{ fontSize: '32px', fontWeight: 700, color: '#FF6B00', fontFamily: 'Georgia, serif', marginBottom: '8px' }}>
-              🌿 Apni Fasal Chuniye
-            </h2>
-            <p style={{ fontSize: '14px', color: '#555', fontFamily: 'Georgia, serif' }}>
-              Tap karke price dekho
-            </p>
+          <div style={S.cropSectionHeader}>
+            <h2 style={S.cropSectionTitle}>🌿 Apni Fasal Chuniye</h2>
+            <p style={S.cropSectionSub}>Tap karke price dekho</p>
           </div>
 
-          <div style={S.cropGridFull}>
+          <div style={S.cropGrid}>
             {CROPS.map((c, i) => (
               <button
                 key={c.api}
-                style={{ ...S.cropCardFull, animationDelay: `${i * 0.04}s` }}
+                style={{ ...S.cropCard, animationDelay: `${i * 0.04}s` }}
                 onClick={() => { setCrop(c); setStep('district') }}
               >
-                <span style={S.cropArrowNew}>›</span>
-                <span style={S.cropEmojiNew}>{c.emoji}</span>
-                <span style={S.cropHindiNew}>{c.hindi}</span>
-                <span style={S.cropOdiaNew}>{c.odia}</span>
+                <span style={S.cropArrow}>›</span>
+                <span style={S.cropEmoji}>{c.emoji}</span>
+                <span style={S.cropHindi}>{c.hindi}</span>
+                <span style={S.cropOdia}>{c.odia}</span>
               </button>
             ))}
           </div>
 
-          {/* ── Bottom tip — NO CurvedLoop here anymore ── */}
           <div style={S.bottomTip}>
             💡 Bechne se pehle local vyapari se bhi poochho — ye wholesale mandi ka daam hai.
           </div>
@@ -475,9 +461,10 @@ export default function MarketPricePage() {
       {/* ══ RESULT ══ */}
       {step === 'result' && best && crop && advice && (
         <div style={S.resultPage}>
+          {/* Advice Banner */}
           <div style={{ ...S.rAdvice, background: advice.color }}>
-            <span style={{ fontSize: '3rem', lineHeight: 1, flexShrink: 0 }}>{advice.emoji}</span>
-            <div style={{ flex: 1 }}>
+            <span style={{ fontSize: 'clamp(2rem, 6vw, 3rem)', lineHeight: 1, flexShrink: 0 }}>{advice.emoji}</span>
+            <div style={{ flex: 1, minWidth: 0 }}>
               <div style={S.rAdviceTitle}>{advice.text}</div>
               <div style={S.rAdviceSub}>{advice.sub}</div>
             </div>
@@ -487,11 +474,14 @@ export default function MarketPricePage() {
             </div>
           </div>
 
+          {/* Result Grid — stacks on mobile */}
           <div style={S.resultGrid}>
+            {/* LEFT COLUMN */}
             <div style={{ display: 'flex', flexDirection: 'column' as const, gap: '1rem' }}>
+              {/* Hero Price Card */}
               <div style={S.rHeroPrice}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '1rem' }}>
-                  <span style={{ fontSize: '2.5rem', filter: 'drop-shadow(1px 3px 6px rgba(0,0,0,0.15))' }}>{crop.emoji}</span>
+                  <span style={{ fontSize: 'clamp(2rem, 6vw, 2.5rem)', filter: 'drop-shadow(1px 3px 6px rgba(0,0,0,0.15))' }}>{crop.emoji}</span>
                   <div>
                     <div style={S.rCropName}>{crop.hindi} <span style={{ fontWeight: 500, color: '#6b7c6b', fontSize: '0.9rem' }}>({crop.odia})</span></div>
                     <div style={S.rCropLoc}>🏪 {best.market}</div>
@@ -505,7 +495,7 @@ export default function MarketPricePage() {
                   </div>
                   <div style={{ ...S.rPriceBox, borderTop: '4px solid #16a34a', background: '#f0faf4', boxShadow: '0 4px 16px rgba(22,163,74,0.15)' }}>
                     <div style={S.rPriceBoxLabel}>✅ Aaj ka</div>
-                    <div style={{ ...S.rPriceVal, color: '#16a34a', fontSize: '1.9rem' }}>{unitPrice}</div>
+                    <div style={{ ...S.rPriceVal, color: '#16a34a', fontSize: 'clamp(1.3rem, 4vw, 1.9rem)' }}>{unitPrice}</div>
                     <div style={S.rPriceUnit}>{unitObj.label}</div>
                   </div>
                   <div style={{ ...S.rPriceBox, borderTop: '4px solid #2d6a4f' }}>
@@ -522,18 +512,20 @@ export default function MarketPricePage() {
                   <div style={S.rMandiTitle}>🏪 Baaki Mandis</div>
                   {records.slice(0, 6).map((r, i) => (
                     <div key={i} style={{ ...S.rMandiRow, background: i === 0 ? '#f0faf4' : i % 2 === 0 ? '#fafcf8' : '#fff', borderLeft: i === 0 ? '5px solid #16a34a' : '5px solid #e8f0e4' }}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                        {i === 0 && <span style={{ background: '#16a34a', color: '#fff', fontSize: '0.62rem', fontWeight: 800, padding: '0.15rem 0.45rem', borderRadius: '99px' }}>BEST</span>}
-                        <span style={{ fontSize: '0.95rem', fontWeight: 700, color: '#1b4332' }}>{r.market}</span>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', minWidth: 0 }}>
+                        {i === 0 && <span style={{ background: '#16a34a', color: '#fff', fontSize: '0.62rem', fontWeight: 800, padding: '0.15rem 0.45rem', borderRadius: '99px', flexShrink: 0 }}>BEST</span>}
+                        <span style={{ fontSize: '0.95rem', fontWeight: 700, color: '#1b4332', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' as const }}>{r.market}</span>
                       </div>
-                      <div style={{ fontSize: '1.05rem', fontWeight: 900, color: i === 0 ? '#16a34a' : '#2d6a4f' }}>{priceForUnit(parseFloat(r.modal_price), unitObj.kg)}</div>
+                      <div style={{ fontSize: '1.05rem', fontWeight: 900, color: i === 0 ? '#16a34a' : '#2d6a4f', flexShrink: 0, marginLeft: '0.5rem' }}>{priceForUnit(parseFloat(r.modal_price), unitObj.kg)}</div>
                     </div>
                   ))}
                 </div>
               )}
             </div>
 
+            {/* RIGHT COLUMN */}
             <div style={{ display: 'flex', flexDirection: 'column' as const, gap: '1rem' }}>
+              {/* Unit Selector */}
               <div style={S.rUnitCard}>
                 <div style={S.rUnitTitle}>🧮 Kitna Bechoge?</div>
                 <div style={S.rUnitGrid}>
@@ -550,6 +542,7 @@ export default function MarketPricePage() {
                 </div>
               </div>
 
+              {/* Actions */}
               <div style={S.rActions}>
                 <a href={`https://wa.me/?text=${encodeURIComponent(buildWAMsg(crop, district, best, unitObj.label, unitPrice, advice))}`} target="_blank" rel="noopener noreferrer" style={S.waBtn}>
                   <span style={{ fontSize: '1.3rem' }}>💬</span> WhatsApp pe bhejo
@@ -587,7 +580,7 @@ export default function MarketPricePage() {
                 <div style={{ fontSize: '0.78rem', fontWeight: 700, color: '#6b7c6b', textTransform: 'uppercase' as const, marginBottom: '0.5rem' }}>Active Alerts</div>
                 {savedAlerts.map((a, i) => (
                   <div key={i} style={S.savedAlertRow}>
-                    <span>{a.cropEmoji} {a.cropHindi} — {a.district}</span>
+                    <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' as const, minWidth: 0 }}>{a.cropEmoji} {a.cropHindi} — {a.district}</span>
                     <button style={S.removeBtn} onClick={() => {
                       const updated = savedAlerts.filter((_, j) => j !== i)
                       setSavedAlerts(updated)
@@ -602,17 +595,75 @@ export default function MarketPricePage() {
         </div>
       )}
 
+      {/* ══ GLOBAL STYLES ══ */}
       <style>{`
-        @keyframes spin       { to{transform:rotate(360deg)} }
-        @keyframes fadeUp     { from{opacity:0;transform:translateY(18px)} to{opacity:1;transform:translateY(0)} }
-        @keyframes floatDrift { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-10px)} }
-        @keyframes ticker     { from{transform:translateX(0)} to{transform:translateX(-50%)} }
-        @media(max-width:900px){
-          .heroSplit{grid-template-columns:1fr!important;min-height:auto!important}
-          .heroRight{display:none!important}
-          .cropGridFull{grid-template-columns:repeat(2,1fr)!important}
+        * { box-sizing: border-box; }
+
+        @keyframes spin       { to { transform: rotate(360deg) } }
+        @keyframes fadeUp     { from { opacity: 0; transform: translateY(18px) } to { opacity: 1; transform: translateY(0) } }
+        @keyframes ticker     { from { transform: translateX(0) } to { transform: translateX(-50%) } }
+
+        /* ── Crop grid: 4 cols → 3 cols → 2 cols ── */
+        .crop-grid-responsive {
+          grid-template-columns: repeat(4, 1fr) !important;
         }
-        @media(max-width:700px){ .resultGrid-r{grid-template-columns:1fr !important} }
+        @media (max-width: 900px) {
+          .crop-grid-responsive {
+            grid-template-columns: repeat(3, 1fr) !important;
+          }
+        }
+        @media (max-width: 560px) {
+          .crop-grid-responsive {
+            grid-template-columns: repeat(2, 1fr) !important;
+          }
+        }
+
+        /* ── Result grid: 2 cols → 1 col ── */
+        .result-grid-responsive {
+          grid-template-columns: 1fr 1fr !important;
+        }
+        @media (max-width: 768px) {
+          .result-grid-responsive {
+            grid-template-columns: 1fr !important;
+          }
+        }
+
+        /* ── District grid ── */
+        .dist-grid-responsive {
+          grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)) !important;
+        }
+        @media (max-width: 480px) {
+          .dist-grid-responsive {
+            grid-template-columns: repeat(2, 1fr) !important;
+          }
+        }
+
+        /* ── Hero: reduce padding on mobile ── */
+        @media (max-width: 640px) {
+          .hero-section-responsive {
+            padding: 2rem 1.25rem 1.25rem !important;
+          }
+          .hero-title-responsive {
+            font-size: 2.2rem !important;
+          }
+        }
+
+        /* ── Unit grid: 3 cols → 2 cols on tiny screens ── */
+        @media (max-width: 360px) {
+          .unit-grid-responsive {
+            grid-template-columns: repeat(2, 1fr) !important;
+          }
+        }
+
+        /* ── Tap highlight ── */
+        button { -webkit-tap-highlight-color: transparent; }
+
+        /* ── Result price val responsive ── */
+        @media (max-width: 400px) {
+          .price-val-responsive {
+            font-size: 1.1rem !important;
+          }
+        }
       `}</style>
     </div>
   )
@@ -625,11 +676,11 @@ const S: Record<string, React.CSSProperties> = {
   pageWrap: {
     minHeight: '100vh',
     position: 'relative' as const,
-    fontFamily: "'Segoe UI',system-ui,sans-serif",
+    fontFamily: "'Segoe UI', system-ui, sans-serif",
     paddingBottom: '4rem',
   },
 
-  /* ── TOP BAR: orange sticky bar with scrolling ticker ── */
+  /* ── TOP BAR ── */
   topBar: {
     width: '100%',
     height: '44px',
@@ -648,17 +699,15 @@ const S: Record<string, React.CSSProperties> = {
     border: '1px solid rgba(255,255,255,0.3)',
     color: '#fff',
     borderRadius: '10px',
-    padding: '0.3rem 0.8rem',
-    fontSize: '0.82rem',
+    padding: '0.3rem 0.7rem',
+    fontSize: '0.78rem',
     fontWeight: 700,
     cursor: 'pointer',
-    marginLeft: '0.75rem',
+    marginLeft: '0.5rem',
     flexShrink: 0,
     whiteSpace: 'nowrap' as const,
     lineHeight: 1,
   },
-
-  /* CurvedLoop fills remaining width — no scale hack, same as homepage */
   topMarqueeWrap: {
     flex: 1,
     height: '100%',
@@ -666,8 +715,6 @@ const S: Record<string, React.CSSProperties> = {
     alignItems: 'center',
     overflow: 'hidden',
   },
-
-  /* Two copies of the text side-by-side; CSS animation scrolls the pair left by 50% */
   tickerTrack: {
     display: 'flex',
     whiteSpace: 'nowrap' as const,
@@ -685,24 +732,16 @@ const S: Record<string, React.CSSProperties> = {
     paddingRight: '2rem',
   },
 
-  container: {
-    padding: '1rem',
-    maxWidth: 520,
-    margin: '0 auto',
+  /* ── HERO ── */
+  heroSection: {
     position: 'relative' as const,
     zIndex: 1,
-  },
-
-  heroSplit: {
-    display: 'grid',
-    gridTemplateColumns: '1fr 1fr',
-    alignItems: 'center',
-    gap: '3rem',
-    padding: '4rem 5vw 3rem',
-    minHeight: '45vh',
+    padding: 'clamp(1.5rem, 5vw, 4rem) clamp(1rem, 5vw, 5vw) clamp(1.25rem, 3vw, 3rem)',
     animation: 'fadeUp 0.6s ease both',
+    display: 'flex',
+    flexDirection: 'column' as const,
+    gap: '1rem',
   },
-  heroLeft: { display: 'flex', flexDirection: 'column' as const, gap: '1.25rem' },
   heroBadge: {
     display: 'inline-block',
     background: 'rgba(0,0,0,0.4)',
@@ -716,15 +755,21 @@ const S: Record<string, React.CSSProperties> = {
     alignSelf: 'flex-start',
   },
   heroTitle: {
-    fontSize: 'clamp(2.8rem,5vw,4.5rem)',
+    fontSize: 'clamp(2rem, 6vw, 4.5rem)',
     fontWeight: 900,
     color: '#fff',
-    lineHeight: 1.05,
+    lineHeight: 1.1,
     margin: 0,
-    letterSpacing: '-0.04em',
+    letterSpacing: '-0.03em',
   },
   heroAccent: { color: '#f4a261' },
-  heroDesc: { fontSize: '1.1rem', color: 'rgba(255,255,255,0.9)', lineHeight: 1.75, margin: 0 },
+  heroDesc: {
+    fontSize: 'clamp(0.9rem, 2.5vw, 1.1rem)',
+    color: 'rgba(255,255,255,0.9)',
+    lineHeight: 1.75,
+    margin: 0,
+    maxWidth: '600px',
+  },
   pillRow: { display: 'flex', gap: '0.65rem', flexWrap: 'wrap' as const },
   heroPill: {
     background: 'rgba(0,0,0,0.38)',
@@ -736,103 +781,453 @@ const S: Record<string, React.CSSProperties> = {
     borderRadius: '99px',
   },
 
-  cropGridFull: {
-    display: 'grid',
-    gridTemplateColumns: 'repeat(4,1fr)',
-    gap: '1.1rem',
-    padding: '0 5vw',
+  /* ── CROP SECTION HEADER ── */
+  cropSectionHeader: {
+    textAlign: 'center' as const,
+    margin: '0.5rem 0 1rem',
+    position: 'relative' as const,
+    zIndex: 1,
   },
-  cropCardFull: {
+  cropSectionTitle: {
+    fontSize: 'clamp(1.4rem, 4vw, 2rem)',
+    fontWeight: 700,
+    color: '#FF6B00',
+    fontFamily: 'Georgia, serif',
+    marginBottom: '4px',
+    margin: 0,
+  },
+  cropSectionSub: {
+    fontSize: '0.85rem',
+    color: '#555',
+    fontFamily: 'Georgia, serif',
+    margin: '4px 0 0',
+  },
+
+  /* ── CROP GRID ── */
+  cropGrid: {
+    display: 'grid',
+    // className handles responsive cols
+    gridTemplateColumns: 'repeat(4, 1fr)',
+    gap: 'clamp(0.6rem, 2vw, 1.1rem)',
+    padding: '0 clamp(0.75rem, 5vw, 5vw)',
+    position: 'relative' as const,
+    zIndex: 1,
+  },
+  cropCard: {
     position: 'relative' as const,
     background: 'rgba(244, 162, 97, 0.18)',
     border: '2px solid rgba(244, 162, 97, 0.35)',
-    borderRadius: '22px',
-    padding: '1.75rem 0.75rem 1.25rem',
+    borderRadius: 'clamp(14px, 3vw, 22px)',
+    padding: 'clamp(1rem, 3vw, 1.75rem) 0.75rem clamp(0.8rem, 2vw, 1.25rem)',
     display: 'flex',
     flexDirection: 'column' as const,
     alignItems: 'center',
-    gap: '0.4rem',
+    gap: '0.35rem',
     cursor: 'pointer',
     boxShadow: '0 4px 16px rgba(244, 162, 97, 0.15)',
     WebkitTapHighlightColor: 'transparent',
     animation: 'fadeUp 0.5s ease both',
-    transition: 'transform 0.15s, background 0.15s',
+    transition: 'transform 0.15s',
   },
-  cropArrowNew: { position: 'absolute' as const, top: '0.8rem', right: '1rem', fontSize: '1.1rem', color: 'rgba(255,255,255,0.35)', fontWeight: 700 },
-  cropEmojiNew: { fontSize: '3.4rem', lineHeight: 1, filter: 'drop-shadow(1px 3px 8px rgba(0,0,0,0.3))', marginBottom: '0.2rem' },
-  cropHindiNew: { fontSize: '1.1rem', fontWeight: 900, color: '#000', letterSpacing: '-0.01em' },
-  cropOdiaNew: { fontSize: '0.85rem', color: '#000', fontWeight: 500 },
+  cropArrow: {
+    position: 'absolute' as const,
+    top: '0.6rem',
+    right: '0.7rem',
+    fontSize: '1rem',
+    color: 'rgba(255,255,255,0.35)',
+    fontWeight: 700,
+  },
+  cropEmoji: {
+    fontSize: 'clamp(2rem, 6vw, 3.4rem)',
+    lineHeight: 1,
+    filter: 'drop-shadow(1px 3px 8px rgba(0,0,0,0.3))',
+    marginBottom: '0.1rem',
+  },
+  cropHindi: {
+    fontSize: 'clamp(0.85rem, 2.5vw, 1.1rem)',
+    fontWeight: 900,
+    color: '#000',
+    letterSpacing: '-0.01em',
+    textAlign: 'center' as const,
+  },
+  cropOdia: {
+    fontSize: 'clamp(0.7rem, 2vw, 0.85rem)',
+    color: '#000',
+    fontWeight: 500,
+    textAlign: 'center' as const,
+  },
 
   bottomTip: {
-    margin: '1.5rem 5vw 0',
-    padding: '1rem 1.4rem',
+    margin: 'clamp(1rem, 3vw, 1.5rem) clamp(0.75rem, 5vw, 5vw) 0',
+    padding: '1rem 1.25rem',
     background: 'rgba(0,0,0,0.4)',
     border: '1px solid rgba(255,255,255,0.18)',
     borderRadius: '16px',
-    fontSize: '0.92rem',
+    fontSize: 'clamp(0.8rem, 2vw, 0.92rem)',
     color: 'rgba(255,255,255,0.92)',
     lineHeight: 1.6,
+    position: 'relative' as const,
+    zIndex: 1,
   },
 
-  distHeader: { position: 'relative' as const, zIndex: 1, textAlign: 'center' as const, padding: '2.5rem 1.5rem 1.5rem', animation: 'fadeUp 0.5s ease both' },
-  distCropBadge: { display: 'inline-block', background: 'rgba(0,0,0,0.4)', border: '1px solid rgba(255,255,255,0.3)', color: '#fff', fontSize: '0.85rem', fontWeight: 800, padding: '0.3rem 1rem', borderRadius: '99px', marginBottom: '0.75rem', letterSpacing: '0.04em' },
-  distTitle: { fontSize: 'clamp(2rem,4.5vw,3rem)', fontWeight: 900, color: '#fff', margin: '0 0 0.4rem', letterSpacing: '-0.03em' },
+  /* ── DISTRICT ── */
+  distHeader: {
+    position: 'relative' as const,
+    zIndex: 1,
+    textAlign: 'center' as const,
+    padding: 'clamp(1.5rem, 4vw, 2.5rem) 1rem clamp(1rem, 3vw, 1.5rem)',
+    animation: 'fadeUp 0.5s ease both',
+  },
+  distCropBadge: {
+    display: 'inline-block',
+    background: 'rgba(0,0,0,0.4)',
+    border: '1px solid rgba(255,255,255,0.3)',
+    color: '#fff',
+    fontSize: '0.85rem',
+    fontWeight: 800,
+    padding: '0.3rem 1rem',
+    borderRadius: '99px',
+    marginBottom: '0.75rem',
+    letterSpacing: '0.04em',
+  },
+  distTitle: {
+    fontSize: 'clamp(1.6rem, 5vw, 3rem)',
+    fontWeight: 900,
+    color: '#fff',
+    margin: '0 0 0.4rem',
+    letterSpacing: '-0.03em',
+  },
   distSubtitle: { fontSize: '0.9rem', color: 'rgba(255,255,255,0.9)', margin: 0 },
-  distGrid: { display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '0.85rem', padding: '0 1.5rem', maxWidth: 960, margin: '0 auto' },
-  distCard: { position: 'relative' as const, background: 'rgba(0,0,0,0.45)', border: '2px solid rgba(255,255,255,0.22)', borderRadius: '18px', padding: '1.1rem 1rem 0.9rem', display: 'flex', flexDirection: 'column' as const, alignItems: 'flex-start', gap: '0.2rem', cursor: 'pointer', textAlign: 'left' as const, boxShadow: '0 4px 12px rgba(0,0,0,0.3)', WebkitTapHighlightColor: 'transparent', animation: 'fadeUp 0.45s ease both', transition: 'transform 0.15s' },
-  distCardIcon: { fontSize: '2rem', lineHeight: 1, marginBottom: '0.2rem', filter: 'drop-shadow(1px 2px 4px rgba(0,0,0,0.3))' },
-  distCardName: { fontSize: '1.05rem', fontWeight: 900, color: '#fff', letterSpacing: '-0.01em' },
-  distCardTag: { fontSize: '0.75rem', fontWeight: 700, color: 'rgba(255,255,255,0.75)', textTransform: 'uppercase' as const, letterSpacing: '0.06em' },
+  distGrid: {
+    display: 'grid',
+    gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))',
+    gap: 'clamp(0.5rem, 2vw, 0.85rem)',
+    padding: '0 clamp(0.75rem, 3vw, 1.5rem)',
+    maxWidth: 960,
+    margin: '0 auto',
+    position: 'relative' as const,
+    zIndex: 1,
+  },
+  distCard: {
+    position: 'relative' as const,
+    background: 'rgba(0,0,0,0.45)',
+    border: '2px solid rgba(255,255,255,0.22)',
+    borderRadius: '18px',
+    padding: 'clamp(0.75rem, 2vw, 1.1rem) clamp(0.7rem, 2vw, 1rem)',
+    display: 'flex',
+    flexDirection: 'column' as const,
+    alignItems: 'flex-start',
+    gap: '0.2rem',
+    cursor: 'pointer',
+    textAlign: 'left' as const,
+    boxShadow: '0 4px 12px rgba(0,0,0,0.3)',
+    animation: 'fadeUp 0.45s ease both',
+    transition: 'transform 0.15s',
+  },
+  distCardIcon: { fontSize: 'clamp(1.5rem, 4vw, 2rem)', lineHeight: 1, marginBottom: '0.2rem', filter: 'drop-shadow(1px 2px 4px rgba(0,0,0,0.3))' },
+  distCardName: { fontSize: 'clamp(0.9rem, 2.5vw, 1.05rem)', fontWeight: 900, color: '#fff', letterSpacing: '-0.01em' },
+  distCardTag: { fontSize: '0.72rem', fontWeight: 700, color: 'rgba(255,255,255,0.75)', textTransform: 'uppercase' as const, letterSpacing: '0.06em' },
   distCardArrow: { position: 'absolute' as const, top: '0.85rem', right: '0.9rem', fontSize: '0.85rem', color: 'rgba(255,255,255,0.35)', fontWeight: 700 },
 
-  centered: { display: 'flex', flexDirection: 'column' as const, alignItems: 'center', justifyContent: 'center', minHeight: '60vh', gap: '1rem' },
-  spinner: { width: 56, height: 56, borderRadius: '50%', border: '6px solid #e2eed8', borderTop: '6px solid #2d6a4f', animation: 'spin 0.85s linear infinite' },
-  errorCard: { background: '#fff', borderRadius: '20px', padding: '2rem 1.5rem', marginTop: '1rem', display: 'flex', flexDirection: 'column' as const, alignItems: 'center', gap: '1rem', boxShadow: '0 2px 12px rgba(0,0,0,0.08)', textAlign: 'center' as const },
+  /* ── LOADING / ERROR ── */
+  centered: {
+    display: 'flex',
+    flexDirection: 'column' as const,
+    alignItems: 'center',
+    justifyContent: 'center',
+    minHeight: '60vh',
+    gap: '1rem',
+    position: 'relative' as const,
+    zIndex: 1,
+  },
+  spinner: {
+    width: 56,
+    height: 56,
+    borderRadius: '50%',
+    border: '6px solid #e2eed8',
+    borderTop: '6px solid #2d6a4f',
+    animation: 'spin 0.85s linear infinite',
+  },
+
+  container: {
+    padding: 'clamp(0.75rem, 3vw, 1rem)',
+    maxWidth: 520,
+    margin: '0 auto',
+    position: 'relative' as const,
+    zIndex: 1,
+  },
+  errorCard: {
+    background: '#fff',
+    borderRadius: '20px',
+    padding: 'clamp(1.25rem, 4vw, 2rem) clamp(1rem, 4vw, 1.5rem)',
+    marginTop: '1rem',
+    display: 'flex',
+    flexDirection: 'column' as const,
+    alignItems: 'center',
+    gap: '1rem',
+    boxShadow: '0 2px 12px rgba(0,0,0,0.08)',
+    textAlign: 'center' as const,
+  },
   errIcon: { fontSize: '3rem' },
   errT: { fontSize: '1.2rem', fontWeight: 800, color: '#1b4332', margin: 0 },
   errB: { fontSize: '0.95rem', color: '#4b5563', lineHeight: 1.7, margin: 0 },
-  greenBtn: { background: '#2d6a4f', color: '#fff', padding: '0.85rem 1.5rem', borderRadius: '14px', fontSize: '1rem', fontWeight: 700, textDecoration: 'none', display: 'block', width: '100%', textAlign: 'center' as const, border: 'none', cursor: 'pointer' },
-  outlineBtn: { background: '#fff', border: '2px solid #2d6a4f', color: '#2d6a4f', padding: '0.85rem', borderRadius: '14px', fontSize: '1rem', fontWeight: 700, cursor: 'pointer', width: '100%' },
+  greenBtn: {
+    background: '#2d6a4f',
+    color: '#fff',
+    padding: '0.85rem 1.5rem',
+    borderRadius: '14px',
+    fontSize: '1rem',
+    fontWeight: 700,
+    textDecoration: 'none',
+    display: 'block',
+    width: '100%',
+    textAlign: 'center' as const,
+    border: 'none',
+    cursor: 'pointer',
+  },
+  outlineBtn: {
+    background: '#fff',
+    border: '2px solid #2d6a4f',
+    color: '#2d6a4f',
+    padding: '0.85rem',
+    borderRadius: '14px',
+    fontSize: '1rem',
+    fontWeight: 700,
+    cursor: 'pointer',
+    width: '100%',
+  },
 
-  resultPage: { position: 'relative' as const, zIndex: 1, padding: '1rem 1.5rem 3rem', maxWidth: 1100, margin: '0 auto' },
-  resultGrid: { display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.25rem', marginTop: '1rem' },
-  rAdvice: { borderRadius: '20px', padding: '1.25rem 1.75rem', marginBottom: 0, display: 'flex', alignItems: 'center', gap: '1.25rem', animation: 'fadeUp 0.3s ease', boxShadow: '0 4px 20px rgba(0,0,0,0.15)' },
-  rAdviceTitle: { fontSize: '1.7rem', fontWeight: 900, color: '#fff', lineHeight: 1.1, letterSpacing: '-0.02em' },
-  rAdviceSub: { fontSize: '0.92rem', color: 'rgba(255,255,255,0.92)', marginTop: '0.3rem', fontWeight: 500 },
-  rActions: { display: 'flex', flexDirection: 'column' as const, gap: '0.75rem' },
-  rHeroPrice: { background: '#fff', borderRadius: '22px', padding: '1.4rem', marginBottom: '1rem', boxShadow: '0 4px 24px rgba(0,0,0,0.1)', animation: 'fadeUp 0.4s 0.05s ease both' },
-  rCropName: { fontSize: '1.15rem', fontWeight: 900, color: '#1b4332' },
+  /* ── RESULT ── */
+  resultPage: {
+    position: 'relative' as const,
+    zIndex: 1,
+    padding: 'clamp(0.75rem, 3vw, 1rem) clamp(0.75rem, 3vw, 1.5rem) 3rem',
+    maxWidth: 1100,
+    margin: '0 auto',
+  },
+  resultGrid: {
+    display: 'grid',
+    // responsive via <style> block
+    gridTemplateColumns: '1fr 1fr',
+    gap: 'clamp(0.75rem, 2vw, 1.25rem)',
+    marginTop: '1rem',
+  },
+  rAdvice: {
+    borderRadius: 'clamp(14px, 3vw, 20px)',
+    padding: 'clamp(0.9rem, 3vw, 1.25rem) clamp(1rem, 3vw, 1.75rem)',
+    marginBottom: 0,
+    display: 'flex',
+    alignItems: 'center',
+    gap: 'clamp(0.75rem, 2vw, 1.25rem)',
+    animation: 'fadeUp 0.3s ease',
+    boxShadow: '0 4px 20px rgba(0,0,0,0.15)',
+    flexWrap: 'nowrap' as const,
+  },
+  rAdviceTitle: {
+    fontSize: 'clamp(1.2rem, 4vw, 1.7rem)',
+    fontWeight: 900,
+    color: '#fff',
+    lineHeight: 1.1,
+    letterSpacing: '-0.02em',
+  },
+  rAdviceSub: { fontSize: 'clamp(0.8rem, 2vw, 0.92rem)', color: 'rgba(255,255,255,0.92)', marginTop: '0.3rem', fontWeight: 500 },
+  rHeroPrice: {
+    background: '#fff',
+    borderRadius: 'clamp(14px, 3vw, 22px)',
+    padding: 'clamp(1rem, 3vw, 1.4rem)',
+    boxShadow: '0 4px 24px rgba(0,0,0,0.1)',
+    animation: 'fadeUp 0.4s 0.05s ease both',
+  },
+  rCropName: { fontSize: 'clamp(1rem, 3vw, 1.15rem)', fontWeight: 900, color: '#1b4332' },
   rCropLoc: { fontSize: '0.82rem', color: '#6b7c6b', marginTop: '0.15rem' },
-  rPriceRow: { display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '0.6rem', marginBottom: '0.85rem', alignItems: 'end' },
-  rPriceBox: { background: '#f8faf5', borderRadius: '16px', padding: '0.85rem 0.5rem', textAlign: 'center' as const, transition: 'transform 0.15s' },
-  rPriceBoxLabel: { fontSize: '0.72rem', fontWeight: 700, color: '#6b7c6b', textTransform: 'uppercase' as const, letterSpacing: '0.05em', marginBottom: '0.4rem' },
-  rPriceVal: { fontSize: '1.45rem', fontWeight: 900, lineHeight: 1.1 },
-  rPriceUnit: { fontSize: '0.68rem', color: '#9ca3af', marginTop: '0.25rem', fontWeight: 600 },
-  rQuintalNote: { fontSize: '0.8rem', color: '#6b7c6b', textAlign: 'center' as const, borderTop: '1px solid #e8f0e4', paddingTop: '0.75rem', fontWeight: 600 },
-  rUnitCard: { background: '#fff', borderRadius: '22px', padding: '1.4rem', marginBottom: '1rem', boxShadow: '0 4px 24px rgba(0,0,0,0.08)', animation: 'fadeUp 0.4s 0.1s ease both' },
-  rUnitTitle: { fontSize: '1.05rem', fontWeight: 900, color: '#1b4332', marginBottom: '1rem' },
-  rUnitGrid: { display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: '0.5rem', marginBottom: '1.1rem' },
-  rUnitBtn: { borderRadius: '12px', padding: '0.65rem 0.3rem', fontSize: '0.88rem', cursor: 'pointer', border: '2px solid', transition: 'transform 0.12s', WebkitTapHighlightColor: 'transparent' },
-  rUnitResult: { background: '#f0faf4', borderRadius: '16px', padding: '1.1rem', textAlign: 'center' as const },
-  rUnitResultLabel: { fontSize: '0.78rem', fontWeight: 700, color: '#6b7c6b', textTransform: 'uppercase' as const, letterSpacing: '0.06em' },
-  rUnitResultPrice: { fontSize: '3.2rem', fontWeight: 900, color: '#1b4332', lineHeight: 1.1, margin: '0.2rem 0', letterSpacing: '-0.04em' },
-  rUnitResultSub: { fontSize: '0.85rem', color: '#6b7c6b' },
-  rMandiCard: { background: '#fff', borderRadius: '22px', padding: '1.25rem', marginBottom: '1rem', boxShadow: '0 4px 24px rgba(0,0,0,0.08)', animation: 'fadeUp 0.4s 0.15s ease both' },
+  rPriceRow: {
+    display: 'grid',
+    gridTemplateColumns: '1fr 1fr 1fr',
+    gap: 'clamp(0.35rem, 1.5vw, 0.6rem)',
+    marginBottom: '0.85rem',
+    alignItems: 'end',
+  },
+  rPriceBox: {
+    background: '#f8faf5',
+    borderRadius: 'clamp(10px, 2vw, 16px)',
+    padding: 'clamp(0.6rem, 2vw, 0.85rem) clamp(0.3rem, 1vw, 0.5rem)',
+    textAlign: 'center' as const,
+  },
+  rPriceBoxLabel: {
+    fontSize: 'clamp(0.6rem, 1.8vw, 0.72rem)',
+    fontWeight: 700,
+    color: '#6b7c6b',
+    textTransform: 'uppercase' as const,
+    letterSpacing: '0.04em',
+    marginBottom: '0.3rem',
+  },
+  rPriceVal: {
+    fontSize: 'clamp(1rem, 3vw, 1.45rem)',
+    fontWeight: 900,
+    lineHeight: 1.1,
+    wordBreak: 'break-word' as const,
+  },
+  rPriceUnit: { fontSize: '0.65rem', color: '#9ca3af', marginTop: '0.25rem', fontWeight: 600 },
+  rQuintalNote: {
+    fontSize: 'clamp(0.72rem, 2vw, 0.8rem)',
+    color: '#6b7c6b',
+    textAlign: 'center' as const,
+    borderTop: '1px solid #e8f0e4',
+    paddingTop: '0.75rem',
+    fontWeight: 600,
+  },
+
+  rMandiCard: {
+    background: '#fff',
+    borderRadius: 'clamp(14px, 3vw, 22px)',
+    padding: 'clamp(1rem, 3vw, 1.25rem)',
+    boxShadow: '0 4px 24px rgba(0,0,0,0.08)',
+    animation: 'fadeUp 0.4s 0.15s ease both',
+  },
   rMandiTitle: { fontSize: '1rem', fontWeight: 800, color: '#1b4332', marginBottom: '0.75rem' },
-  rMandiRow: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderRadius: '12px', padding: '0.8rem 1rem', marginBottom: '0.4rem' },
-  waBtn: { display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.6rem', background: '#25d366', color: '#fff', padding: '1rem', borderRadius: '16px', fontSize: '1.05rem', fontWeight: 800, textDecoration: 'none', marginBottom: '0.75rem', boxShadow: '0 4px 14px rgba(37,211,102,0.3)' },
-  alertSetupBtn: { width: '100%', padding: '0.9rem', background: '#fff', border: '2px solid #f59e0b', color: '#92400e', borderRadius: '16px', fontSize: '0.95rem', fontWeight: 700, cursor: 'pointer', marginBottom: '0.75rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem' } as React.CSSProperties,
-  tip: { background: '#fffbeb', border: '1px solid #fde68a', borderRadius: '14px', padding: '0.85rem 1rem', display: 'flex', alignItems: 'flex-start', gap: '0.65rem', marginBottom: '1rem', fontSize: '0.875rem', color: '#92400e', lineHeight: 1.6 },
-  resetBtn: { width: '100%', padding: '1rem', background: '#2d6a4f', color: '#fff', border: 'none', borderRadius: '16px', fontSize: '1.05rem', fontWeight: 800, cursor: 'pointer', boxShadow: '0 4px 14px rgba(45,106,79,0.25)' },
-  alertCard: { background: '#fff', borderRadius: '20px', padding: '1.75rem 1.25rem', marginTop: '0.5rem', boxShadow: '0 2px 12px rgba(0,0,0,0.08)', display: 'flex', flexDirection: 'column' as const, alignItems: 'center', gap: '1rem' },
-  alertTitle: { fontSize: '1.4rem', fontWeight: 800, color: '#1b4332', margin: 0 },
-  alertDesc: { fontSize: '0.95rem', color: '#4b5563', lineHeight: 1.7, textAlign: 'center' as const, margin: 0 },
+  rMandiRow: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    borderRadius: '12px',
+    padding: 'clamp(0.55rem, 2vw, 0.8rem) clamp(0.6rem, 2vw, 1rem)',
+    marginBottom: '0.4rem',
+  },
+
+  rUnitCard: {
+    background: '#fff',
+    borderRadius: 'clamp(14px, 3vw, 22px)',
+    padding: 'clamp(1rem, 3vw, 1.4rem)',
+    boxShadow: '0 4px 24px rgba(0,0,0,0.08)',
+    animation: 'fadeUp 0.4s 0.1s ease both',
+  },
+  rUnitTitle: { fontSize: '1.05rem', fontWeight: 900, color: '#1b4332', marginBottom: '1rem' },
+  rUnitGrid: {
+    display: 'grid',
+    gridTemplateColumns: 'repeat(3, 1fr)',
+    gap: '0.45rem',
+    marginBottom: '1rem',
+  },
+  rUnitBtn: {
+    borderRadius: '12px',
+    padding: 'clamp(0.45rem, 1.5vw, 0.65rem) 0.3rem',
+    fontSize: 'clamp(0.75rem, 2vw, 0.88rem)',
+    cursor: 'pointer',
+    border: '2px solid',
+    transition: 'transform 0.12s',
+  },
+  rUnitResult: {
+    background: '#f0faf4',
+    borderRadius: '16px',
+    padding: 'clamp(0.75rem, 2vw, 1.1rem)',
+    textAlign: 'center' as const,
+  },
+  rUnitResultLabel: {
+    fontSize: '0.78rem',
+    fontWeight: 700,
+    color: '#6b7c6b',
+    textTransform: 'uppercase' as const,
+    letterSpacing: '0.06em',
+  },
+  rUnitResultPrice: {
+    fontSize: 'clamp(2rem, 6vw, 3.2rem)',
+    fontWeight: 900,
+    color: '#1b4332',
+    lineHeight: 1.1,
+    margin: '0.2rem 0',
+    letterSpacing: '-0.04em',
+    wordBreak: 'break-word' as const,
+  },
+  rUnitResultSub: { fontSize: '0.85rem', color: '#6b7c6b' },
+
+  rActions: { display: 'flex', flexDirection: 'column' as const, gap: '0.75rem' },
+  waBtn: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: '0.6rem',
+    background: '#25d366',
+    color: '#fff',
+    padding: 'clamp(0.75rem, 2.5vw, 1rem)',
+    borderRadius: '16px',
+    fontSize: 'clamp(0.9rem, 2.5vw, 1.05rem)',
+    fontWeight: 800,
+    textDecoration: 'none',
+    boxShadow: '0 4px 14px rgba(37,211,102,0.3)',
+  },
+  alertSetupBtn: {
+    width: '100%',
+    padding: 'clamp(0.75rem, 2vw, 0.9rem)',
+    background: '#fff',
+    border: '2px solid #f59e0b',
+    color: '#92400e',
+    borderRadius: '16px',
+    fontSize: 'clamp(0.85rem, 2.5vw, 0.95rem)',
+    fontWeight: 700,
+    cursor: 'pointer',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: '0.5rem',
+  } as React.CSSProperties,
+  tip: {
+    background: '#fffbeb',
+    border: '1px solid #fde68a',
+    borderRadius: '14px',
+    padding: 'clamp(0.6rem, 2vw, 0.85rem) clamp(0.75rem, 2vw, 1rem)',
+    display: 'flex',
+    alignItems: 'flex-start',
+    gap: '0.5rem',
+    fontSize: 'clamp(0.78rem, 2vw, 0.875rem)',
+    color: '#92400e',
+    lineHeight: 1.6,
+  },
+  resetBtn: {
+    width: '100%',
+    padding: 'clamp(0.75rem, 2.5vw, 1rem)',
+    background: '#2d6a4f',
+    color: '#fff',
+    border: 'none',
+    borderRadius: '16px',
+    fontSize: 'clamp(0.9rem, 2.5vw, 1.05rem)',
+    fontWeight: 800,
+    cursor: 'pointer',
+    boxShadow: '0 4px 14px rgba(45,106,79,0.25)',
+  },
+
+  /* ── ALERT ── */
+  alertCard: {
+    background: '#fff',
+    borderRadius: '20px',
+    padding: 'clamp(1.25rem, 4vw, 1.75rem) clamp(1rem, 4vw, 1.25rem)',
+    marginTop: '0.5rem',
+    boxShadow: '0 2px 12px rgba(0,0,0,0.08)',
+    display: 'flex',
+    flexDirection: 'column' as const,
+    alignItems: 'center',
+    gap: '1rem',
+  },
+  alertTitle: { fontSize: 'clamp(1.1rem, 4vw, 1.4rem)', fontWeight: 800, color: '#1b4332', margin: 0 },
+  alertDesc: { fontSize: 'clamp(0.85rem, 2.5vw, 0.95rem)', color: '#4b5563', lineHeight: 1.7, textAlign: 'center' as const, margin: 0 },
   alertFieldWrap: { width: '100%' },
   alertLabel: { fontSize: '0.85rem', fontWeight: 700, color: '#1b4332', display: 'block', marginBottom: '0.5rem' },
   phoneRow: { display: 'flex', alignItems: 'center', border: '2px solid #e2eed8', borderRadius: '12px', overflow: 'hidden' },
   phonePrefix: { background: '#f3f8f3', padding: '0.8rem 0.75rem', fontSize: '1rem', fontWeight: 700, color: '#1b4332', borderRight: '2px solid #e2eed8', flexShrink: 0 },
-  phoneInput: { flex: 1, padding: '0.8rem', fontSize: '1.1rem', border: 'none', outline: 'none', color: '#1b4332' },
+  phoneInput: { flex: 1, padding: '0.8rem', fontSize: '1.1rem', border: 'none', outline: 'none', color: '#1b4332', minWidth: 0 },
   alertSuccess: { background: '#dcfce7', border: '2px solid #86efac', borderRadius: '14px', padding: '1rem', textAlign: 'center' as const, fontWeight: 700, color: '#16a34a', lineHeight: 1.6, width: '100%' },
-  savedAlertRow: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: '#f3f8f3', borderRadius: '10px', padding: '0.65rem 0.85rem', marginBottom: '0.4rem', fontSize: '0.9rem', fontWeight: 600, color: '#1b4332', width: '100%' },
-  removeBtn: { background: 'none', border: 'none', color: '#dc2626', fontWeight: 800, cursor: 'pointer', fontSize: '1rem' },
+  savedAlertRow: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    background: '#f3f8f3',
+    borderRadius: '10px',
+    padding: '0.65rem 0.85rem',
+    marginBottom: '0.4rem',
+    fontSize: '0.9rem',
+    fontWeight: 600,
+    color: '#1b4332',
+    width: '100%',
+    gap: '0.5rem',
+  },
+  removeBtn: { background: 'none', border: 'none', color: '#dc2626', fontWeight: 800, cursor: 'pointer', fontSize: '1rem', flexShrink: 0 },
 }
