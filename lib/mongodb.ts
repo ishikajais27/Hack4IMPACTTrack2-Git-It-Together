@@ -1,12 +1,11 @@
 import { MongoClient } from 'mongodb'
 
-const uri = process.env.MONGODB_URI as string
+const MONGODB_URI = process.env.MONGODB_URI as string
+const DB_NAME = process.env.MONGODB_DB || 'krishimitra'
 
-if (!uri) {
-  throw new Error('Please define the MONGODB_URI environment variable in .env')
-}
+if (!MONGODB_URI) throw new Error('MONGODB_URI is not set in environment variables')
 
-let client: MongoClient
+// Cache the client promise — works correctly in Next.js serverless
 let clientPromise: Promise<MongoClient>
 
 declare global {
@@ -15,16 +14,18 @@ declare global {
 }
 
 if (process.env.NODE_ENV === 'development') {
-  // In development, use a global variable so the MongoClient
-  // is not re-created on every hot-reload
+  // In dev, use a global so hot-reload doesn't create multiple connections
   if (!global._mongoClientPromise) {
-    client = new MongoClient(uri)
+    const client = new MongoClient(MONGODB_URI)
     global._mongoClientPromise = client.connect()
   }
   clientPromise = global._mongoClientPromise
 } else {
-  client = new MongoClient(uri)
+  const client = new MongoClient(MONGODB_URI)
   clientPromise = client.connect()
 }
 
-export default clientPromise
+export async function getDb() {
+  const client = await clientPromise
+  return client.db(DB_NAME)
+}
